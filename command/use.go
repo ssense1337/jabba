@@ -37,6 +37,15 @@ func usePath(path string) ([]string, error) {
 	if !overrideWasSet {
 		systemJavaHome, _ = os.LookupEnv("JAVA_HOME")
 	}
+	currentVersionPath := filepath.Join(cfg.Dir(), "jdk", "current")
+	err = os.Remove(currentVersionPath)
+	if err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+	err = os.Symlink(path, currentVersionPath)
+	if err != nil {
+		return nil, err
+	}
 	return []string{
 		"export PATH=\"" + filepath.Join(path, "bin") + string(os.PathListSeparator) + pth + "\"",
 		"export JAVA_HOME=\"" + path + "\"",
